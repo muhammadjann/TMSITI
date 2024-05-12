@@ -1,7 +1,5 @@
-from django.db import models
-import datetime
-from uuid import uuid4
 from django.contrib.auth import get_user_model
+from django.db import models
 
 
 class AbstractBaseModel(models.Model):
@@ -84,3 +82,37 @@ class TMSITIStandard(AbstractBaseModel):
     class Meta:
         verbose_name_plural = 'Standards'
         db_table = 'standards'
+
+
+class TMSITIContact(models.Model):
+    fullname = models.CharField(max_length=500)
+    email = models.EmailField()
+    phone_number = models.IntegerField()
+    management = models.ForeignKey(TMSITIManagement, on_delete=models.CASCADE)
+    appeal_text = models.TextField()
+    appeal_file = models.FileField(upload_to='appeals/', null=True)
+
+
+class TMSITIElecStandards(AbstractBaseModel):
+    doc_number = models.IntegerField()
+    doc_title = models.CharField(max_length=500)
+    doc_type = models.CharField(max_length=500)
+    doc_sign = models.CharField(max_length=500, null=True)
+    doc_approved_year = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.doc_title} | {self.doc_type} | {self.doc_sign}"
+
+    class Meta:
+        verbose_name_plural = 'ElecStandards'
+        db_table = 'elec_standards'
+
+
+class TMSITIBuildingReglements(AbstractBaseModel):
+    reglement_number = models.IntegerField()
+    reglement_code = models.CharField(max_length=10)
+    reglement_title = models.CharField(max_length=500)
+    reglement_file = models.FileField(upload_to='buildings/')
+
+    def __str__(self):
+        return f"{self.reglement_code} | {self.reglement_title}"
