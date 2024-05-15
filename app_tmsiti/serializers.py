@@ -1,8 +1,8 @@
-from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
 from app_tmsiti.models import TMSITINews, TMSITIAnnouncement, TMSITIManagement, TMSITIStructuralDivision, \
-    TMSITIStandard, TMSITIContact, TMSITIElecStandards, TMSITIBuildingReglements
+    TMSITIStandard, TMSITIContact, TMSITIElecStandards, TMSITIBuildingReglements, TMSITISubsystem, TMSITIGroup, \
+    TMSITISHNK, TMSITIDictionary
 
 
 class NewsListSerializer(ModelSerializer):
@@ -57,3 +57,31 @@ class BuildingReglementsSerializer(ModelSerializer):
     class Meta:
         model = TMSITIBuildingReglements
         fields = '__all__'
+
+
+class SHNKSerializer(ModelSerializer):
+    class Meta:
+        model = TMSITISHNK
+        fields = ['SHNK_code', 'SHNK_date', 'SHNK_title', 'SHNK_file_uz', 'SHNK_file_ru']
+
+
+class GroupSerializer(ModelSerializer):
+    shnk_set = SHNKSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = TMSITIGroup
+        fields = ['group_number', 'group_name', 'shnk_set']
+
+
+class SubsystemSerializer(ModelSerializer):
+    group_set = GroupSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = TMSITISubsystem
+        fields = ['subsystem_number', 'subsystem_title', 'group_set']
+
+
+class DictionarySerializer(ModelSerializer):
+    class Meta:
+        model = TMSITIDictionary
+        fields = ['id', 'word_name_uz', 'word_name_ru', 'word_name_en', 'word_name_turk']

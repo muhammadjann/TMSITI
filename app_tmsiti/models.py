@@ -116,3 +116,60 @@ class TMSITIBuildingReglements(AbstractBaseModel):
 
     def __str__(self):
         return f"{self.reglement_code} | {self.reglement_title}"
+
+
+class TMSITISubsystem(AbstractBaseModel):
+    subsystem_number = models.IntegerField()
+    subsystem_title = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.subsystem_number} | {self.subsystem_title}"
+
+
+class TMSITIGroup(AbstractBaseModel):
+    group_number = models.IntegerField()
+    group_name = models.CharField(max_length=255)
+    group_subsystem = models.ForeignKey(TMSITISubsystem, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.group_number} | {self.group_name}"
+
+    class Meta:
+        verbose_name_plural = 'Groups'
+        db_table = 'groups'
+
+
+class TMSITISHNK(AbstractBaseModel):
+    SHNK_code = models.CharField(max_length=10)
+    SHNK_date = models.CharField(max_length=128)
+    SHNK_title = models.CharField(max_length=255)
+    SHNK_file_uz = models.FileField(upload_to='shnks/')
+    SHNK_file_ru = models.FileField(upload_to='shnks/')
+    SHNK_group = models.ForeignKey(TMSITIGroup, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.SHNK_code} | {self.SHNK_date} | {self.SHNK_title}"
+
+    class Meta:
+        verbose_name_plural = 'SHNKS'
+        db_table = 'shnks'
+
+
+class TMSITIDictionary(models.Model):
+    word_name_uz = models.CharField(max_length=255, unique=True, db_index=True)
+    word_name_ru = models.CharField(max_length=255, unique=True, db_index=True)
+    word_name_en = models.CharField(max_length=255, unique=True, db_index=True)
+    word_name_turk = models.CharField(max_length=255, unique=True, db_index=True)
+
+    def __str__(self):
+        return f"{self.word_name_uz} | {self.word_name_en} | {self.word_name_ru} | {self.word_name_turk}"
+
+    class Meta:
+        verbose_name_plural = 'TMSITIDictionaries'
+        db_table = "dictionary"
+        indexes = [
+            models.Index(fields=['word_name_uz']),
+            models.Index(fields=['word_name_ru']),
+            models.Index(fields=['word_name_en']),
+            models.Index(fields=['word_name_turk']),
+        ]
